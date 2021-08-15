@@ -47,24 +47,29 @@ def DataDownload():
     FilesLocation = "C:\\Users\\natic\\TrabajoFinal\\Data\\"
     prefs = {'download.default_directory': FilesLocation}
     ChromeOptions.add_experimental_option('prefs', prefs)
-    Path = 'C:\Program Files (x86)\chromeDriver.exe'         #the Path has to be in path
+    Path = 'C:\Program Files (x86)\chromeDriver.exe'         # The Path has to be in path
     Driver = webdriver.Chrome(options = ChromeOptions, executable_path = Path)
     BanRepLink = 'https://totoro.banrep.gov.co/estadisticas-economicas/'
 
     for Variable in Variables:
-        #Open the link    
+        # Open the link    
         Driver.get(BanRepLink)
-        # print(Driver.title)
+        #print(Driver.title)
         try:
-            #Variable Search
+            # Variable Search
             Search = Driver.find_element_by_id("formbuscador1:autobuscador_input")
             Search.send_keys(Variable)
-            time.sleep(2)
+            time.sleep(1)
 
+            WebDriverWait(Driver, timeout = 10).until(
+                EC.element_to_be_clickable((By.XPATH,
+                '//tr[@data-item-label = "' + Variable + '"]'))
+            )
             Results = Driver.find_elements_by_xpath('//tr[@data-item-label = "' + Variable + '"]')
             Results[0].click()
-
-            #download button
+            time.sleep(1)
+            
+            # Download button
             WebDriverWait(Driver, timeout = 20).until(
                 EC.presence_of_element_located((By.XPATH,
                 '//*[name()="svg"]//*[@class="highcharts-exporting-group"]//*[@class="highcharts-button-symbol"]'))
@@ -75,14 +80,14 @@ def DataDownload():
             Driver.find_element_by_xpath('//li[2]').click()
             time.sleep(2)
 
-            #rename cvs
+            # Rename cvs
             Filename = os.path.join(FilesLocation, 'chart.csv')
             shutil.move(Filename,os.path.join(FilesLocation, Variable.replace(":","") + ".csv"))
 
         except Exception as e:
             print(f'La Variable {Variable} no fue descargada. Error: {e}')
 
-    #close the browser
+    # Close the browser
     Driver.quit()
 
 def run():
