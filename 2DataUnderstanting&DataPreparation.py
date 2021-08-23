@@ -139,7 +139,7 @@ def DescribeData(BeforeFrequencyModification):
                     top=0.9, 
                     wspace=0.4, 
                     hspace=0.4)
-                # plt.show()
+                plt.show()
 
         if i == 10 and BeforeFrequencyModification:
             plt.subplots_adjust(left=0.1,
@@ -148,7 +148,7 @@ def DescribeData(BeforeFrequencyModification):
                     top=0.9, 
                     wspace=0.4, 
                     hspace=0.4)
-            # plt.show()
+            plt.show()
             i = 1
     
     if BeforeFrequencyModification:
@@ -158,7 +158,7 @@ def DescribeData(BeforeFrequencyModification):
                 top=0.9, 
                 wspace=0.4, 
                 hspace=0.4)
-        # plt.show()
+        plt.show()
     
 def VerifyDataQuality():
     for NameTimeSerie, DictTimeSerie in Variables.items():
