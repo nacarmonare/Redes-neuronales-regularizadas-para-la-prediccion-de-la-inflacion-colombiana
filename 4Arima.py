@@ -64,7 +64,7 @@ def Descompose():
 def run():
     DataImport()
     DescribeData()
-    # FittingModel()
+    FittingModel()
     Descompose()
 
 if __name__ == '__main__':

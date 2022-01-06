@@ -78,7 +78,7 @@ def DataDownload():
                 '//*[name()="svg"]//*[@class="highcharts-exporting-group"]//*[@class="highcharts-button-symbol"]'
                 ).click()
             Driver.find_element_by_xpath('//li[2]').click()
-            time.sleep(2)
+            time.sleep(3)
 
             # Rename cvs
             Filename = os.path.join(FilesLocation, 'chart.csv')
