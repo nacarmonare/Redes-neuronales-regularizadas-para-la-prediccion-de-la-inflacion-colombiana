@@ -302,17 +302,17 @@ def DatasetCreation():
     TrainDataSet = Dataset[: int(len(Dataset) * PercentageTrain)]
     TestDataSet = Dataset[int(len(Dataset) * PercentageTrain) :]
 
-    # Save Ooriginal Datasets
-    Dataset.to_csv(os.path.join(FilesLocation, 'Dataset.csv'), index = False)
-    TrainDataSet.to_csv(os.path.join(FilesLocation, 'TrainDataSet.csv'), index = False)
-    TestDataSet.to_csv(os.path.join(FilesLocation, 'TestDataSet.csv'), index = False)
+    # Save Original Datasets
+    Dataset.to_csv(os.path.join(FilesLocation, 'Dataset.csv'), index=False)
+    TrainDataSet.to_csv(os.path.join(FilesLocation, 'TrainDataSet.csv'), index=False)
+    TestDataSet.to_csv(os.path.join(FilesLocation, 'TestDataSet.csv'), index=False)
 
 def run():
     DataImport()
-    DescribeData(BeforeFrequencyModification = True, ShowPlots = False)
+    DescribeData(BeforeFrequencyModification=True, ShowPlots=False)
     VerifyDataQuality()
     FrequencyModification()
-    DescribeData(BeforeFrequencyModification = False, ShowPlots = False)
+    DescribeData(BeforeFrequencyModification=False, ShowPlots=False)
     DatasetCreation()
 
 if __name__ == '__main__':
