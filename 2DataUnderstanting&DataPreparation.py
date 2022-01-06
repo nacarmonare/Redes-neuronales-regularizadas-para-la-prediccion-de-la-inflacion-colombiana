@@ -178,9 +178,9 @@ def DescribeData(BeforeFrequencyModification, ShowPlots):
             if ShowPlots: 
                 ax = plt.subplot(3, 3, i)
                 ax.plot(DictTimeSerie['DataFrameOriginal'])
-                ax.set_title(NameTimeSerie)
-                ax.set_xlabel(DictTimeSerie['xLabel'])
-                ax.set_ylabel(DictTimeSerie['yLabel'])
+                ax.set_title(NameTimeSerie, fontsize=15)
+                ax.set_xlabel(DictTimeSerie['xLabel'], fontsize=15)
+                ax.set_ylabel(DictTimeSerie['yLabel'], fontsize=15)
                 if DictTimeSerie['yLabel'] == 'Miles de millones COP':
                     ax.yaxis.set_major_formatter(StrMethodFormatter('{x:,.0f}'))
                 
@@ -207,34 +207,34 @@ def DescribeData(BeforeFrequencyModification, ShowPlots):
                         plt.clf() #clean the plot
                     ax = plt.subplot(1, 2, 1)
                     ax.plot(DictTimeSerie['DataFrameOriginal'])
-                    ax.set_title(NameTimeSerie)
-                    ax.set_xlabel(DictTimeSerie['xLabel'])
-                    ax.set_ylabel(DictTimeSerie['yLabel'])
+                    ax.set_title(NameTimeSerie, fontsize=15)
+                    ax.set_xlabel(DictTimeSerie['xLabel'], fontsize=15)
+                    ax.set_ylabel(DictTimeSerie['yLabel'], fontsize=15)
                     if DictTimeSerie['yLabel'] == 'Miles de millones COP':
                         ax.yaxis.set_major_formatter(StrMethodFormatter('{x:,.0f}'))
                     
                     ax = plt.subplot(1, 2, 2)
                     ax.plot(DictTimeSerie['DataFrameMonthly'])
-                    ax.set_title('After frequency modification: Promedio mensual ' + NameTimeSerie)
-                    ax.set_xlabel('Meses')
-                    ax.set_ylabel(DictTimeSerie['yLabel'])
+                    ax.set_title('Modificación: Promedio mensual ' + NameTimeSerie, fontsize=15)
+                    ax.set_xlabel('Meses', fontsize=15)
+                    ax.set_ylabel(DictTimeSerie['yLabel'], fontsize=15)
                     if DictTimeSerie['yLabel'] == 'Miles de millones COP':
                         ax.yaxis.set_major_formatter(StrMethodFormatter('{x:,.0f}'))
-                    plt.subplots_adjust(left=0.1,
-                        bottom=0.1, 
-                        right=0.9, 
-                        top=0.9, 
-                        wspace=0.4, 
+                    plt.subplots_adjust(left=0.074,
+                        bottom=0.4, 
+                        right=0.98, 
+                        top=0.952, 
+                        wspace=0.21, 
                         hspace=0.4)
                     plt.show()
     
     if BeforeFrequencyModification and ShowPlots:
-        plt.subplots_adjust(left=0.1,
-                bottom=0.1, 
-                right=0.9, 
-                top=0.9, 
-                wspace=0.4, 
-                hspace=0.4)
+        plt.subplots_adjust(left=0.074,
+            bottom=0.4, 
+            right=0.98, 
+            top=0.952, 
+            wspace=0.21, 
+            hspace=0.4)
         plt.show()
     
 def VerifyDataQuality():
