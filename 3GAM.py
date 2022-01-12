@@ -16,8 +16,8 @@ def DataImport():
                                             index_col=0, 
                                             decimal='.')
     
-    globals()['XData'] = Data.drop(['IPC','Inflaciontotal'], axis=1)
-    globals()['YData'] = Data.filter(['IPC'])
+    globals()['XData'] = Data.drop(['IPC_Y','Inflaciontotal'], axis=1)
+    globals()['YData'] = Data.filter(['IPC_Y'])
 
     #Scale
     Scaler = MinMaxScaler(feature_range=(0, 1))
@@ -38,19 +38,35 @@ def Model():
     fig = plt.figure(figsize=(15, 15))
     j = 0
 
-    for i in range(0,23):
+    for i in range(0,26):
         XX = ModelGAM.generate_X_grid(term=i)
         ax = plt.subplot(2,4, j+1)
         ax.plot(XX[:, i], ModelGAM.partial_dependence(term=i, X=XX))
         ax.plot(XX[:, i], ModelGAM.partial_dependence(term=i, X=XX, width=.95)[1], c='r', ls='--')
+        
+        if titles[i] == 'Promedio mensual TasaPoliticaMonetaria':
+            titles[i] = 'Promedio mensual\nTasaPoliticaMonetaria'
+        elif titles[i] == 'Promedio mensual MetaInflacion':
+            titles[i] = 'Promedio mensual\nMetaInflacion'
+        elif titles[i] == 'Promedio mensual ReservaBancaria':
+            titles[i] = 'Promedio mensual\nReservaBancaria'
+        elif titles[i] == 'TotalCarteraBrutaTitularizacionMonedaExtranjera':
+            titles[i] = 'TotalCarteraBruta\nTitularizacionMonedaExtranjera'
+        elif titles[i] == 'TotalCarteraBrutaTitularizacionMonedaLegal':
+            titles[i] = 'TotalCarteraBruta\nTitularizacionMonedaLegal'
+        elif titles[i] == 'Promedio mensual TasaInteresCeroCuponTES':
+            titles[i] = 'Promedio mensual\nTasaInteresCeroCuponTES'
+        elif titles[i] == 'Promedio mensual TasaInteresCeroCuponUVR':
+            titles[i] = 'Promedio mensual\nTasaInteresCeroCuponUVR'
         ax.set_title(titles[i])
+
         # ax.set_xlabel(DictTimeSerie['xLabel'])
         plt.ylim(-0.2, 0.2)
         ax.set_ylabel('Impacto Marginal sobre el IPC')
 
         j += 1
 
-        if i == 7 or i ==15:
+        if i == 7 or i == 15 or i == 23:
             plt.subplots_adjust(left=0.1,
                             bottom=0.1, 
                             right=0.9, 

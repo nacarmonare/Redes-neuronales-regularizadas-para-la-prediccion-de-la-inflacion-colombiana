@@ -278,6 +278,7 @@ def DatasetCreation():
     for NameTimeSerie, DictTimeSerie in Variables.items():
         if DictTimeSerie['Frequency'] != 'M':   #With frequency modification
             # Serie between min date and max date
+            DictTimeSerie['DataFrameMonthly'].rename(columns = {NameTimeSerie : 'Promedio mensual ' + NameTimeSerie}, inplace = True)
             SubSet = DictTimeSerie['DataFrameMonthly'][MinDate:MaxDate]
         else:
             # Serie between min date and max date
@@ -293,10 +294,14 @@ def DatasetCreation():
 
     print(Dataset)  
 
+    #Shift the 'IPC' column back one, two and three months to create new predictive variables
+    Dataset['IPC_1'] = Dataset['IPC'].shift(1)
+    Dataset['IPC_2'] = Dataset['IPC'].shift(2)
 
     #Shift the 'IPC' column back one month to be the dependent variable
-    Dataset['IPC'] = Dataset['IPC'].shift(-1)
-    Dataset = Dataset[:-1]
+    Dataset['IPC_Y'] = Dataset['IPC'].shift(-1)
+    Dataset = Dataset[2:-1]
+
     #Divde the datasets in train dataset and test dataset
     PercentageTrain = 0.8
     TrainDataSet = Dataset[: int(len(Dataset) * PercentageTrain)]
