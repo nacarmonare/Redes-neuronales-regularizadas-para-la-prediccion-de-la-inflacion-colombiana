@@ -300,6 +300,7 @@ def DatasetCreation():
 
     #Shift the 'IPC' column back one month to be the dependent variable
     Dataset['IPC_Y'] = Dataset['IPC'].shift(-1)
+    Dataset.rename(columns = {'IPC' : 'IPC_0'}, inplace = True)
     Dataset = Dataset[2:-1]
 
     #Divde the datasets in train dataset and test dataset

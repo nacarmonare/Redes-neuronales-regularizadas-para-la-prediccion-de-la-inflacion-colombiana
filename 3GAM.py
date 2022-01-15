@@ -31,16 +31,16 @@ def DataImport():
 def Model():
     lams = np.logspace(-3, 3, 30)
     n_splines = np.arange(10)
-    globals()['ModelGAM'] = LinearGAM().gridsearch(XDataNormalized.values, YDataNormalized.values, lam= lams, n_splines= n_splines)
+    globals()['ModelGAM'] = LinearGAM().gridsearch(XDataNormalized.values, YDataNormalized.values, lam=lams, n_splines=n_splines)
     ModelGAM.summary()
 
-    titles = XData.columns
+    titles = XData.columns.values
     fig = plt.figure(figsize=(15, 15))
     j = 0
 
     for i in range(0,26):
         XX = ModelGAM.generate_X_grid(term=i)
-        ax = plt.subplot(2,4, j+1)
+        ax = plt.subplot(2,3, j+1)
         ax.plot(XX[:, i], ModelGAM.partial_dependence(term=i, X=XX))
         ax.plot(XX[:, i], ModelGAM.partial_dependence(term=i, X=XX, width=.95)[1], c='r', ls='--')
         
@@ -62,11 +62,11 @@ def Model():
 
         # ax.set_xlabel(DictTimeSerie['xLabel'])
         plt.ylim(-0.2, 0.2)
-        ax.set_ylabel('Impacto Marginal sobre el IPC')
+        ax.set_ylabel('Impacto Marginal\nsobre el IPC t+1')
 
         j += 1
 
-        if i == 7 or i == 15 or i == 23:
+        if i == 5 or i == 11 or i == 17 or i == 23 or i == 26:
             plt.subplots_adjust(left=0.1,
                             bottom=0.1, 
                             right=0.9, 
@@ -86,41 +86,29 @@ def Model():
 
 def FinalDatasetCreation():
     # Save Final Datasets
-    FinalTrainDataSet = Data.drop(['Inflaciontotal', 
-                                'TasaDesempleo',
-                                'TasaOcupacion',
-                                'ConsumoFinalReal',
-                                'IPP',
-                                'MetaInflacion',
-                                'TRM',
-                                'BaseMonetaria',
-                                'ReservaBancaria',
-                                'TotalCarteraBrutaTitularizacionMonedaExtranjera',
-                                'CreditoConsumoTasaInteres',
-                                'DTF',
-                                'TasaInteresCeroCuponUVR',
-                                'TasaInteresColocacionBanRep'], axis=1)
-
+    FinalTrainDataSet = Data.filter(['IPC_0',
+                                    'IPC_1',
+                                    'IPC_2',
+                                    'CuasidinerosTotal',
+                                    'DepositosSistemaFinanciero',
+                                    'M2',
+                                    'M3',
+                                    'IPC_Y'])
     
     TestDataSet = pd.read_csv(os.path.join(FilesLocation, 'TestDataSet' + '.csv'), 
                                             sep=',',
                                             parse_dates=['Fecha'], 
                                             index_col=0, 
                                             decimal='.')
-    FinalTestDataSet = TestDataSet.drop(['Inflaciontotal', 
-                                'TasaDesempleo',
-                                'TasaOcupacion',
-                                'ConsumoFinalReal',
-                                'IPP',
-                                'MetaInflacion',
-                                'TRM',
-                                'BaseMonetaria',
-                                'ReservaBancaria',
-                                'TotalCarteraBrutaTitularizacionMonedaExtranjera',
-                                'CreditoConsumoTasaInteres',
-                                'DTF',
-                                'TasaInteresCeroCuponUVR',
-                                'TasaInteresColocacionBanRep'], axis=1)
+ 
+    FinalTestDataSet = TestDataSet.filter(['IPC_0',
+                                    'IPC_1',
+                                    'IPC_2',
+                                    'CuasidinerosTotal',
+                                    'DepositosSistemaFinanciero',
+                                    'M2',
+                                    'M3',
+                                    'IPC_Y'])
 
     FinalTrainDataSet.to_csv(os.path.join(FilesLocation, 'FinalTrainDataSet.csv'))
     FinalTestDataSet.to_csv(os.path.join(FilesLocation, 'FinalTestDataSet.csv'))
