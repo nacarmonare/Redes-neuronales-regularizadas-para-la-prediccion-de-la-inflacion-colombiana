@@ -29,8 +29,8 @@ def DataImport():
                                                 columns=YData.columns)
 
 def Model():
-    lams = np.logspace(-3, 3, 30)
-    n_splines = np.arange(10)
+    lams = np.array([np.logspace(-5, 5, 30)] * 26).transpose()
+    n_splines = range(0, 6)
     globals()['ModelGAM'] = LinearGAM().gridsearch(XDataNormalized.values, YDataNormalized.values, lam=lams, n_splines=n_splines)
     ModelGAM.summary()
 
@@ -40,7 +40,7 @@ def Model():
 
     for i in range(0,26):
         XX = ModelGAM.generate_X_grid(term=i)
-        ax = plt.subplot(2,3, j+1)
+        ax = plt.subplot(2, 2, j+1)
         ax.plot(XX[:, i], ModelGAM.partial_dependence(term=i, X=XX))
         ax.plot(XX[:, i], ModelGAM.partial_dependence(term=i, X=XX, width=.95)[1], c='r', ls='--')
         
@@ -66,7 +66,7 @@ def Model():
 
         j += 1
 
-        if i == 5 or i == 11 or i == 17 or i == 23 or i == 26:
+        if i in list(range(0, 26, 4) - np.array([1] * 7)):
             plt.subplots_adjust(left=0.1,
                             bottom=0.1, 
                             right=0.9, 
