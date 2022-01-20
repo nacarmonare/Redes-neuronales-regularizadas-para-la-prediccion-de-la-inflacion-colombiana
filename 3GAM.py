@@ -21,17 +21,17 @@ def DataImport():
 
     #Scale
     Scaler = MinMaxScaler(feature_range=(0, 1))
-    globals()['XDataNormalized'] = pd.DataFrame(Scaler.fit_transform(XData),
+    globals()['XDataScaled'] = pd.DataFrame(Scaler.fit_transform(XData),
                                                 index=XData.index,
                                                 columns=XData.columns)
-    globals()['YDataNormalized'] = pd.DataFrame(Scaler.fit_transform(YData),
+    globals()['YDataScaled'] = pd.DataFrame(Scaler.fit_transform(YData),
                                                 index=YData.index,
                                                 columns=YData.columns)
 
 def Model():
     lams = np.array([np.logspace(-5, 5, 30)] * 26).transpose()
     n_splines = range(0, 6)
-    globals()['ModelGAM'] = LinearGAM().gridsearch(XDataNormalized.values, YDataNormalized.values, lam=lams, n_splines=n_splines)
+    globals()['ModelGAM'] = LinearGAM().gridsearch(XDataScaled.values, YDataScaled.values, lam=lams, n_splines=n_splines)
     ModelGAM.summary()
 
     titles = XData.columns.values
