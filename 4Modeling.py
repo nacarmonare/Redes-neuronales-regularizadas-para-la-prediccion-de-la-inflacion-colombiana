@@ -4,10 +4,11 @@ import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 from keras.layers import Dense
+from keras.layers.recurrent import LSTM
 from keras.models import Sequential
 from keras.wrappers.scikit_learn import KerasRegressor
+from sklearn.metrics import mean_squared_error
 from sklearn.model_selection import KFold, cross_val_score
-# from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import MinMaxScaler
 from tensorflow.keras import regularizers
 
@@ -37,62 +38,85 @@ def DataImport():
     globals()['YTest'] = TestData[:,7].reshape(-1, 1)
 
     #Scale
-    ScalerX = MinMaxScaler(feature_range=(0, 1))
-    ScalerY = MinMaxScaler(feature_range=(0, 1))
+    globals()['ScalerX'] = MinMaxScaler(feature_range=(0, 1))
+    globals()['ScalerY'] = MinMaxScaler(feature_range=(0, 1))
     globals()['XTrainScaled'] = ScalerX.fit_transform(XTrain)
     globals()['YTrainScaled'] = ScalerY.fit_transform(YTrain)
     globals()['XTestScaled'] = ScalerX.transform(XTest)
     globals()['YTestScaled'] = ScalerY.transform(YTest)
 
-def Basemodel():
-    Model = Sequential()
-    # if Regularizer == None:
-    Model.add(Dense(len(DataColumns)-1, 
-                        input_dim=len(DataColumns)-1, 
-                        kernel_initializer='normal', 
-                        activation='relu'))
-    # elif Regularizer == 'Lasso':
-    #     Model.add(Dense(len(DataColumns)-1, 
-    #                     input_dim=len(DataColumns)-1, 
-    #                     kernel_initializer='normal', 
-    #                     activation='relu',
-    #                     kernel_regularizer=regularizers.l1(1e-6)))
+def Model(ModelType):
+    def M():
+        Model = Sequential()
+        if ModelType == 'Base':
+            Model.add(Dense(len(DataColumns)-1, 
+                            input_dim=len(DataColumns)-1, 
+                            kernel_initializer='normal', 
+                            activation='relu'))
+        elif ModelType == 'Lasso':
+            Model.add(Dense(len(DataColumns)-1, 
+                            input_dim=len(DataColumns)-1, 
+                            kernel_initializer='normal', 
+                            activation='relu',
+                            kernel_regularizer=regularizers.l1(1e-6)))
+        elif ModelType == 'Ridge':
+            Model.add(Dense(len(DataColumns)-1, 
+                            input_dim=len(DataColumns)-1, 
+                            kernel_initializer='normal', 
+                            activation='relu',
+                            kernel_regularizer=regularizers.l2(1e-6)))
+        elif ModelType == 'ElNet':
+            Model.add(Dense(len(DataColumns)-1, 
+                            input_dim=len(DataColumns)-1, 
+                            kernel_initializer='normal', 
+                            activation='relu',
+                            kernel_regularizer=regularizers.l1_l2(l1=1e-6, l2=1e-6)))
 
-    Model.add(Dense(32, activation='relu'))
-    Model.add(Dense(32, activation='relu'))
-    Model.add(Dense(1, kernel_initializer='normal'))
+        Model.add(Dense(32, activation='relu'))
+        Model.add(Dense(8, activation='relu'))
+        Model.add(Dense(1, kernel_initializer='normal'))
+        Model.compile(loss='mean_squared_error', optimizer='adam', metrics=['accuracy'])
 
-    Model.compile(loss='mean_squared_error', optimizer='adam', metrics=['accuracy'])
-    # Model.fit(XTrainScaled, YTrainScaled, epochs=1000, batch_size=5)
-    # TrainAccuracy = Model.evaluate(XTrainScaled, YTrainScaled)[1]
-    # print('Train Accuracy: %.2f' % (TrainAccuracy * 100))
+        return Model
+    return M
 
-    # TestAccuracy = Model.evaluate(XTestScaled, YTestScaled, batch_size=30)[1]
-    # print('TestAccuracy: %.2f' % (TestAccuracy * 100))
-
-    return Model
-
-def TrainModels():
+def TrainModel(ModelType):
     # Evaluate model
-    Estimator = KerasRegressor(build_fn=Basemodel, epochs=100, batch_size=5)
+    Estimator = KerasRegressor(build_fn=Model(ModelType), epochs=100, batch_size=5, verbose=0)
     kfold = KFold(n_splits=10)
-    results = cross_val_score(Estimator, XTrainScaled, YTrainScaled, cv=kfold)
-    print("Moodel: %.4f (%.4f) MSE" % (results.mean(), results.std()))
+    Results = cross_val_score(Estimator, XTrainScaled, YTrainScaled, cv=kfold, verbose=0)
+    print("Cross Validation %a: %.4f (%.4f) MSE" % (ModelType, Results.mean(), Results.std()))
+    Estimator.fit(XTrainScaled, YTrainScaled, verbose=0)
 
-    # Predict
-    Estimator.fit(XTrainScaled, YTrainScaled)
+    YTrainPred = Estimator.predict(XTrainScaled)
+    YTrainPred = ScalerY.inverse_transform(YTrainPred.reshape(-1, 1))
+    MSE_Train = mean_squared_error(YTrain, YTrainPred)
+    print(("MSE Train %a: %.4f" % (ModelType, MSE_Train)))
+    plt.plot(YTrain, label="YTrain")
+    plt.plot(YTrainPred, label="YTrainPred")
+    plt.legend()
+    plt.show()
+    plt.close()
+
     YTestPred = Estimator.predict(XTestScaled)
-    train_error =  np.abs(YTestScaled - YTestPred.reshape(30,1))
-    mean_error = np.mean(train_error)
-    min_error = np.min(train_error)
-    max_error = np.max(train_error)
-    std_error = np.std(train_error)
-    # print("Accuracy With Lasso: ", accuracy_score(YTestPred, YTestScaled))
+    YTestPred = ScalerY.inverse_transform(YTestPred.reshape(-1, 1))
+    MSE_Test = mean_squared_error(YTest, YTestPred)
+    print(("MSE Test %a: %.4f" % (ModelType, MSE_Test)))
+    plt.plot(YTest, label="YTest")
+    plt.plot(YTestPred, label="YTestPred")
+    plt.legend()
+    plt.show()
+    plt.close()
+
 
 def run():
     DataImport()
-    Basemodel()
-    TrainModels()
+    TrainModel('Base')
+    TrainModel('Lasso') 
+    TrainModel('Ridge')
+    TrainModel('ElNet')
 
 if __name__ == '__main__':
     run()
+
+
