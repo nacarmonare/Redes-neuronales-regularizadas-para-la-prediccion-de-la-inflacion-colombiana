@@ -8,8 +8,8 @@ from keras import regularizers
 from keras.initializers import RandomUniform
 from keras.layers import Dense
 from keras.models import Sequential
+from keras.wrappers.scikit_learn import KerasRegressor
 from numpy.random import seed
-from scikeras.wrappers import KerasRegressor
 from sklearn.metrics import mean_squared_error
 from sklearn.model_selection import KFold, cross_val_score
 from sklearn.preprocessing import MinMaxScaler
@@ -81,7 +81,7 @@ def Model(ModelType, FactorL1, FactorL2):
     return M
 
 def TrainModel(ModelType, FactorL1, FactorL2):
-    Estimator = KerasRegressor(model=Model(ModelType, FactorL1, FactorL2), epochs=100, batch_size=5, verbose=0)
+    Estimator = KerasRegressor(build_fn=Model(ModelType, FactorL1, FactorL2), epochs=100, batch_size=5, verbose=0)
     kfold = KFold(n_splits=10)
     Results = cross_val_score(Estimator, XTrainScaled, YTrainScaled, cv=kfold, verbose=0)
     print("Cross Validation %a, L1 factor: %a, L2 factor: %a, MSE: %.4f (%.4f) " % (ModelType, FactorL1, FactorL2, Results.mean(), Results.std()))
@@ -110,7 +110,7 @@ def TrainModel(ModelType, FactorL1, FactorL2):
 
 def TrainManyModels(Whose):
 
-    # TrainModel('Base', None, None)
+    TrainModel('Base', None, None)
 
     if Whose == 'All':
         for i in range(-10,-1):
@@ -122,8 +122,8 @@ def TrainManyModels(Whose):
             for j in range(-10,-1):
                 TrainModel('ElNet', 10**i, 10**j)
     elif Whose == 'Best':
-        # TrainModel('Lasso', 1e-3, None)
-        # TrainModel('Ridge', None, 1e-7)
+        TrainModel('Lasso', 1e-3, None)
+        TrainModel('Ridge', None, 1e-7)
         TrainModel('ElNet', 1e-3, 1e-5)
 
 def run():
@@ -134,3 +134,5 @@ def run():
 
 if __name__ == '__main__':
     run()
+
+
