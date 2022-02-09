@@ -110,6 +110,7 @@ def TrainModel(ModelType, FactorL1, FactorL2, Plot):
         ax.legend()
         ax.plot(TrainDates, YTrainPred, label="YTrainPred")
         ax.legend()
+        plt.grid()
         ax.set_title(ModelType, fontsize=12)
         ax.set_xlabel("Meses", fontsize=12)
         ax.set_ylabel("IPC", fontsize=12)
@@ -140,6 +141,7 @@ def TrainModel(ModelType, FactorL1, FactorL2, Plot):
         ax.legend()
         ax.plot(TestDates, YTestPred, label="YTestPred")
         ax.legend()
+        plt.grid()
         ax.set_title(ModelType, fontsize=12)
         ax.set_xlabel("Meses", fontsize=12)
         ax.set_ylabel("IPC", fontsize=12)
@@ -172,7 +174,7 @@ def TrainSetModels(Whose, Plot):
 
 def run():
     DataImport()
-    TrainSetModels('Best', False)
+    TrainSetModels('Best', True)
     
 if __name__ == '__main__':
     run()
